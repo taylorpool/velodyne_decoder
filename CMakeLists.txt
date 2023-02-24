@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(VelodyneDecoder)
+project(velodyne_decoder)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -13,3 +13,25 @@ target_include_directories(velodyne_decoder
   PUBLIC
   include
 )
+
+option(BUILD_ROS_VelodyneDecoder "Build ROS Package" OFF)
+if(${BUILD_ROS_VelodyneDecoder})
+  find_package(catkin REQUIRED COMPONENTS velodyne_msgs)
+
+  catkin_package(
+    CATKIN_DEPENDS
+    velodyne_msgs
+  )
+
+  add_library(velodyne_decoder_ROS
+    src/velodyne_decoder_ros.cpp
+  )
+  target_include_directories(velodyne_decoder_ROS
+    PRIVATE
+    ${catkin_INCLUDE_DIRS}
+  )
+  target_link_libraries(velodyne_decoder_ROS
+    velodyne_decoder
+    ${catkin_LIBRARIES}
+  )
+endif()

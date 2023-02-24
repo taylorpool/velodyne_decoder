@@ -22,6 +22,7 @@ struct RectangularPoint {
   float y;
   float z;
   float intensity;
+  using Vector = std::vector<RectangularPoint>;
 };
 
 RectangularPoint toRectangularPoint(const SphericalPoint &sphericalPoint);

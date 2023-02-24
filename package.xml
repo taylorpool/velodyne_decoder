@@ -1,0 +1,13 @@
+<package format="2">
+	<name>velodyne_decoder</name>
+	<version>0.1.0</version>
+	<description>
+	This package decodes Velodyne Messages
+	</description>
+	<maintainer email="tpool@andrew.cmu.edu">Taylor Pool</maintainer>
+	<license>TBD</license>
+
+	<buildtool_depend>catkin</buildtool_depend>
+	<depend>velodyne_msgs</depend>
+	
+</package>
