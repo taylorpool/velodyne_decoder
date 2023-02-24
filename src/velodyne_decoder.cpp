@@ -47,7 +47,8 @@ SphericalPoint::Vector decodeVelodynePacket(const VelodynePacket &data) {
 RectangularPoint toRectangularPoint(const SphericalPoint &sphericalPoint) {
   RectangularPoint rectPoint;
 
-  auto planarRange = sphericalPoint.range * std::cos(sphericalPoint.elevation);
+  const auto planarRange =
+      sphericalPoint.range * std::cos(sphericalPoint.elevation);
   rectPoint.x = planarRange * std::sin(sphericalPoint.azimuth);
   rectPoint.y = planarRange * std::cos(sphericalPoint.azimuth);
   rectPoint.z = sphericalPoint.range * std::sin(sphericalPoint.elevation);

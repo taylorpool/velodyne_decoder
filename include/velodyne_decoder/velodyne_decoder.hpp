@@ -24,6 +24,8 @@ struct RectangularPoint {
   float intensity;
 };
 
+RectangularPoint toRectangularPoint(const SphericalPoint &sphericalPoint);
+
 constexpr int kNUM_BLOCKS = 12;
 constexpr int kLIDAR_SCAN_LINES = 32;
 constexpr int kPOINTS_PER_PACKET = kNUM_BLOCKS * kLIDAR_SCAN_LINES;
