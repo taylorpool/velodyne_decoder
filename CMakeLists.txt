@@ -27,7 +27,7 @@ if(${BUILD_ROS_VelodyneDecoder})
     src/velodyne_decoder_ros.cpp
   )
   target_include_directories(velodyne_decoder_ROS
-    PRIVATE
+    PUBLIC
     ${catkin_INCLUDE_DIRS}
   )
   target_link_libraries(velodyne_decoder_ROS
