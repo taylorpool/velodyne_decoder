@@ -8,6 +8,6 @@
 	<license>TBD</license>
 
 	<buildtool_depend>catkin</buildtool_depend>
+
 	<depend>velodyne_msgs</depend>
-	
 </package>
