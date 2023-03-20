@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(velodyne_decoder
+  STATIC
   src/velodyne_decoder.cpp
 )
 target_include_directories(velodyne_decoder
@@ -24,6 +25,7 @@ if(${BUILD_ROS_VelodyneDecoder})
   )
 
   add_library(velodyne_decoder_ROS
+    STATIC
     src/velodyne_decoder_ros.cpp
   )
   target_include_directories(velodyne_decoder_ROS
