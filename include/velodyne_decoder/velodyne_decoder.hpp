@@ -17,11 +17,15 @@ struct SphericalPoint {
   using Vector = std::vector<SphericalPoint>;
 };
 
-struct RectangularPoint {
-  float x;
-  float y;
-  float z;
-  float intensity;
+union RectangularPoint {
+  struct Fields {
+    float x;
+    float y;
+    float z;
+    uint8_t intensity;
+  };
+  Fields fields;
+  uint8_t data[sizeof(fields)];
   using Vector = std::vector<RectangularPoint>;
 };
 

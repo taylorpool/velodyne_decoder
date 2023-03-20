@@ -17,11 +17,13 @@ target_include_directories(velodyne_decoder
 
 option(BUILD_ROS_VelodyneDecoder "Build ROS Package" OFF)
 if(${BUILD_ROS_VelodyneDecoder})
-  find_package(catkin REQUIRED COMPONENTS velodyne_msgs)
+  find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs velodyne_msgs)
 
   catkin_package(
     CATKIN_DEPENDS
     velodyne_msgs
+    roscpp
+    sensor_msgs
   )
 
   add_library(velodyne_decoder_ROS
@@ -35,5 +37,12 @@ if(${BUILD_ROS_VelodyneDecoder})
   target_link_libraries(velodyne_decoder_ROS
     velodyne_decoder
     ${catkin_LIBRARIES}
+  )
+
+  add_executable(velodyne_decoder_node
+    src/velodyne_decoder_node.cpp
+  )
+  target_link_libraries(velodyne_decoder_node
+    velodyne_decoder_ROS
   )
 endif()

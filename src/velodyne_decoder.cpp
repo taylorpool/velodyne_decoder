@@ -50,10 +50,11 @@ RectangularPoint toRectangularPoint(const SphericalPoint &sphericalPoint) {
 
   const auto planarRange =
       sphericalPoint.range * std::cos(sphericalPoint.elevation);
-  rectPoint.x = planarRange * std::sin(sphericalPoint.azimuth);
-  rectPoint.y = planarRange * std::cos(sphericalPoint.azimuth);
-  rectPoint.z = sphericalPoint.range * std::sin(sphericalPoint.elevation);
-  rectPoint.intensity = static_cast<float>(sphericalPoint.intensity);
+  rectPoint.fields.x = planarRange * std::sin(sphericalPoint.azimuth);
+  rectPoint.fields.y = planarRange * std::cos(sphericalPoint.azimuth);
+  rectPoint.fields.z =
+      sphericalPoint.range * std::sin(sphericalPoint.elevation);
+  rectPoint.fields.intensity = sphericalPoint.intensity;
 
   return rectPoint;
 }

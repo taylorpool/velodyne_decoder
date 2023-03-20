@@ -1,0 +1,17 @@
+<launch>
+	<node name="front_horiz_velodyne_decoder" pkg="velodyne_decoder" type="velodyne_decoder_node" output="screen">
+		<param name="velodyne_topic" value="/crl_rzr/velodyne_front_horiz_packets" type="str"/>
+		<param name="cloud_topic" value="front_horiz_cloud" type="str"/>
+	</node>
+
+	<node name="front_tilted_velodyne_decoder" pkg="velodyne_decoder" type="velodyne_decoder_node" output="screen">
+		<param name="velodyne_topic" value="/crl_rzr/velodyne_front_tilted_packets" type="str"/>
+		<param name="cloud_topic" value="front_tilted_cloud" type="str"/>
+	</node>
+
+	<node name="back_velodyne_decoder" pkg="velodyne_decoder" type="velodyne_decoder_node" output="screen">
+		<param name="velodyne_topic" value="/crl_rzr/velodyne_back_packets" type="str"/>
+		<param name="cloud_topic" value="back_cloud" type="str"/>
+	</node>
+
+</launch>
