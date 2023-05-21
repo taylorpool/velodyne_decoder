@@ -15,10 +15,8 @@ int main(int argc, char *argv[]) {
     ros::requestShutdown();
   }
 
-  std::string cloudTopic;
-  if (!privateNode.getParam("cloud_topic", cloudTopic)) {
-    ros::requestShutdown();
-  }
+  const std::string cloudTopic = velodyneTopic + "/point_cloud";
+
   auto cloudPublisher =
       privateNode.advertise<sensor_msgs::PointCloud2>(cloudTopic, 2);
 

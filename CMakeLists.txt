@@ -15,9 +15,11 @@ target_include_directories(velodyne_decoder
   include
 )
 
-option(BUILD_ROS_VelodyneDecoder "Build ROS Package" OFF)
-if(${BUILD_ROS_VelodyneDecoder})
-  find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs velodyne_msgs)
+option(VelodyneDecoder_BUILD_ROS1 "Build ROS Package" OFF)
+if(VelodyneDecoder_BUILD_ROS1)
+  find_package(catkin REQUIRED 
+    COMPONENTS roscpp sensor_msgs velodyne_msgs
+  )
 
   catkin_package(
     CATKIN_DEPENDS
@@ -26,15 +28,15 @@ if(${BUILD_ROS_VelodyneDecoder})
     sensor_msgs
   )
 
-  add_library(velodyne_decoder_ROS
+  add_library(velodyne_decoder_ROS1
     STATIC
     src/velodyne_decoder_ros.cpp
   )
-  target_include_directories(velodyne_decoder_ROS
+  target_include_directories(velodyne_decoder_ROS1
     PUBLIC
     ${catkin_INCLUDE_DIRS}
   )
-  target_link_libraries(velodyne_decoder_ROS
+  target_link_libraries(velodyne_decoder_ROS1
     velodyne_decoder
     ${catkin_LIBRARIES}
   )
@@ -43,6 +45,6 @@ if(${BUILD_ROS_VelodyneDecoder})
     src/velodyne_decoder_node.cpp
   )
   target_link_libraries(velodyne_decoder_node
-    velodyne_decoder_ROS
+    velodyne_decoder_ROS1
   )
 endif()
