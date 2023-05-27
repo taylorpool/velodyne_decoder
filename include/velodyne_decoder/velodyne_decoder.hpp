@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -17,15 +16,12 @@ struct SphericalPoint {
   using Vector = std::vector<SphericalPoint>;
 };
 
-union RectangularPoint {
-  struct Fields {
-    float x;
-    float y;
-    float z;
-    uint8_t intensity;
-  };
-  Fields fields;
-  uint8_t data[sizeof(fields)];
+struct RectangularPoint {
+  float timeOffset;
+  float x;
+  float y;
+  float z;
+  uint8_t intensity;
   using Vector = std::vector<RectangularPoint>;
 };
 
@@ -103,12 +99,12 @@ constexpr int kINTENSITY_SIZE = 1;
 constexpr int kBLOCK_TIME_NS = 55296;
 constexpr int kFIRING_TIME_NS = 2304;
 constexpr int kPACKET_TIME_NS = kBLOCK_TIME_NS * kNUM_BLOCKS;
-constexpr double kLIDAR_MESSAGE_TIME =
-    static_cast<double>(kNUM_BLOCKS * kBLOCK_TIME_NS * 151) * 1e-9;
-constexpr double kLIDAR_TIME_EPSILON = 0.05 * kLIDAR_MESSAGE_TIME;
-constexpr double kLIDAR_ANGULAR_RESOLUTION = 0.003467542;
+constexpr float kLIDAR_MESSAGE_TIME =
+    static_cast<float>(kNUM_BLOCKS * kBLOCK_TIME_NS * 151) * 1e-9;
+constexpr float kLIDAR_TIME_EPSILON = 0.05 * kLIDAR_MESSAGE_TIME;
+constexpr float kLIDAR_ANGULAR_RESOLUTION = 0.003467542;
 
-using VelodynePacket = std::array<uint8_t, 1206>;
+using VelodynePacket = uint8_t[1206];
 SphericalPoint::Vector decodeVelodynePacket(const VelodynePacket &packet);
 
 }; // namespace velodyne_decoder

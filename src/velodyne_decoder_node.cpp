@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 
   std::string velodyneTopic;
   if (!privateNode.getParam("velodyne_topic", velodyneTopic)) {
+    std::cerr << "Could not get param velodyne_topic" << std::endl;
     ros::requestShutdown();
   }
 
