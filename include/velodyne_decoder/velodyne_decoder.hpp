@@ -10,7 +10,7 @@ struct SphericalPoint {
   float azimuth;
   float elevation;
   float range;
-  uint8_t intensity;
+  float intensity;
   uint8_t laserId;
   int timeNs;
   using Vector = std::vector<SphericalPoint>;
@@ -21,7 +21,7 @@ struct RectangularPoint {
   float x;
   float y;
   float z;
-  uint8_t intensity;
+  float intensity;
   using Vector = std::vector<RectangularPoint>;
 };
 

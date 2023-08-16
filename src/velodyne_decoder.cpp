@@ -31,7 +31,7 @@ SphericalPoint::Vector decodeVelodynePacket(const VelodynePacket &data) {
 
       point.elevation = kELEVATION_ANGLE[channelIndex];
 
-      point.intensity = data[index];
+      point.intensity = static_cast<float>(data[index]);
       index += kINTENSITY_SIZE;
 
       point.laserId = kLASER_ORDERING[channelIndex];

@@ -27,7 +27,7 @@ void decode(const velodyne_msgs::VelodyneScan::ConstPtr &msg,
 
   cloud.width = points.size();
 
-  cloud.fields.resize(5);
+  cloud.fields.resize(4);
   cloud.fields[0].name = "x";
   cloud.fields[0].offset = 0;
   cloud.fields[0].datatype = sensor_msgs::PointField::FLOAT32;
@@ -42,16 +42,12 @@ void decode(const velodyne_msgs::VelodyneScan::ConstPtr &msg,
   cloud.fields[2].count = 1;
   cloud.fields[3].name = "intensity";
   cloud.fields[3].offset = 12;
-  cloud.fields[3].datatype = sensor_msgs::PointField::UINT16;
+  cloud.fields[3].datatype = sensor_msgs::PointField::FLOAT32;
   cloud.fields[3].count = 1;
-  cloud.fields[4].name = "time_offset";
-  cloud.fields[4].offset = 14;
-  cloud.fields[4].datatype = sensor_msgs::PointField::FLOAT32;
-  cloud.fields[4].count = 1;
 
   cloud.is_bigendian = kIS_BIG_ENDIAN;
 
-  cloud.point_step = static_cast<uint32_t>(18);
+  cloud.point_step = static_cast<uint32_t>(16);
 
   cloud.row_step = cloud.width * cloud.point_step;
 
@@ -77,12 +73,8 @@ void decode(const velodyne_msgs::VelodyneScan::ConstPtr &msg,
         reinterpret_cast<const uint8_t *>(&point.intensity);
     cloud.data.push_back(intensityData[0]);
     cloud.data.push_back(intensityData[1]);
-    const uint8_t *timeOffsetData =
-        reinterpret_cast<const uint8_t *>(&point.timeOffset);
-    cloud.data.push_back(timeOffsetData[0]);
-    cloud.data.push_back(timeOffsetData[1]);
-    cloud.data.push_back(timeOffsetData[2]);
-    cloud.data.push_back(timeOffsetData[3]);
+    cloud.data.push_back(intensityData[2]);
+    cloud.data.push_back(intensityData[3]);
   }
   cloud.is_dense = false;
 }

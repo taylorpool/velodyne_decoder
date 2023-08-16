@@ -19,6 +19,6 @@ stdenv.mkDerivation {
   ];
 
   meta = with lib; {
-    description = "A package to explore odometry";
+    description = "A package to decode velodyne packets";
   };
 }
