@@ -13,6 +13,7 @@ stdenv.mkDerivation {
   ];
 
   propagatedBuildInputs = [
+    eigen
     rosPackages.noetic.sensor-msgs
     rosPackages.noetic.roscpp
     rosPackages.noetic.velodyne-msgs
