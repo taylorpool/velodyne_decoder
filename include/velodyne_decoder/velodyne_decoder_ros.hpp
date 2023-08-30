@@ -13,7 +13,7 @@ constexpr bool kIS_BIG_ENDIAN =
     (static_cast<uint16_t>(256) & (static_cast<uint8_t>(1) << 8)) ==
     static_cast<uint16_t>(256);
 
-RectangularPoint::Vector decodeVelodynePackets(
+PointXYZIT::Vector decodeVelodynePackets(
     const std::vector<velodyne_msgs::VelodynePacket> &packets);
 
 void decode(const velodyne_msgs::VelodyneScanConstPtr &msg,

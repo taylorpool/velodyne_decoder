@@ -1,27 +1,36 @@
 #include "velodyne_decoder/velodyne_decoder_ros.hpp"
 
 namespace velodyne_decoder {
-RectangularPoint::Vector decodeVelodynePackets(
+PointXYZIT::Vector decodeVelodynePackets(
     const std::vector<velodyne_msgs::VelodynePacket> &packets) {
   SphericalPoint::Vector sphericalPoints;
-  RectangularPoint::Vector pointCloud;
-  RectangularPoint rectangularPoint;
+  PointXYZIT::Vector pointCloud;
+  PointXYZIT rectangularPoint;
 
   for (const auto &packet : packets) {
     sphericalPoints = decodeVelodynePacket(packet.data.elems);
     for (const auto &sphericalPoint : sphericalPoints) {
-      rectangularPoint = toRectangularPoint(sphericalPoint);
+      rectangularPoint = toPointXYZIT(sphericalPoint);
       pointCloud.push_back(rectangularPoint);
     }
   }
   return pointCloud;
 }
 
+std::vector<PointXYZICT> decodeVelodynePackets2(
+    const std::vector<velodyne_msgs::VelodynePacket> &packets) {
+  std::vector<PointXYZICT> cloud;
+  std::ranges::for_each(packets, [&cloud](const auto &packet) {
+    appendToCloud(packet.data.elems, cloud);
+  });
+  return cloud;
+}
+
 void decode(const velodyne_msgs::VelodyneScan::ConstPtr &msg,
             sensor_msgs::PointCloud2 &cloud) {
   cloud.header = msg->header;
 
-  const auto points = velodyne_decoder::decodeVelodynePackets(msg->packets);
+  const auto points = velodyne_decoder::decodeVelodynePackets2(msg->packets);
 
   cloud.height = 1;
 

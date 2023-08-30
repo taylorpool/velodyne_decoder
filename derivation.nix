@@ -1,4 +1,4 @@
-{ lib, stdenv, eigen, cmake, rosPackages }:
+{ lib, stdenv, eigen, cmake, rosPackages, python311, llvmPackages_16 }:
 stdenv.mkDerivation {
   pname = "velodyne_decoder";
   version = "0.1.0";
@@ -10,6 +10,7 @@ stdenv.mkDerivation {
     rosPackages.noetic.rosparam
     rosPackages.noetic.rosbag
     rosPackages.noetic.rostopic
+    llvmPackages_16.clang-unwrapped
   ];
 
   propagatedBuildInputs = [

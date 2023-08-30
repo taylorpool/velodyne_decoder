@@ -1,7 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <ranges>
 #include <vector>
 
 namespace velodyne_decoder {
@@ -16,6 +18,32 @@ struct SphericalPoint {
   using Vector = std::vector<SphericalPoint>;
 };
 
+struct PointXYZICT {
+  float x;
+  float y;
+  float z;
+  uint8_t intensity;
+  uint8_t channel;
+  float timeOffset;
+};
+
+struct PointXYZIT {
+  float x;
+  float y;
+  float z;
+  float intensity;
+  float timeOffset;
+  using Vector = std::vector<PointXYZIT>;
+};
+
+struct PointXYZI {
+  float x;
+  float y;
+  float z;
+  float intensity;
+  using Vector = std::vector<PointXYZI>;
+};
+
 struct RectangularPoint {
   float timeOffset;
   float x;
@@ -24,6 +52,8 @@ struct RectangularPoint {
   float intensity;
   using Vector = std::vector<RectangularPoint>;
 };
+
+PointXYZIT toPointXYZIT(const SphericalPoint &sphericalPoint);
 
 RectangularPoint toRectangularPoint(const SphericalPoint &sphericalPoint);
 
@@ -96,6 +126,7 @@ constexpr int kFLAG_SIZE = 2;
 constexpr int kAZIMUTH_SIZE = 2;
 constexpr int kRANGE_SIZE = 2;
 constexpr int kINTENSITY_SIZE = 1;
+constexpr int kPOINT_SIZE = kRANGE_SIZE + kINTENSITY_SIZE;
 constexpr int kBLOCK_TIME_NS = 55296;
 constexpr int kFIRING_TIME_NS = 2304;
 constexpr int kPACKET_TIME_NS = kBLOCK_TIME_NS * kNUM_BLOCKS;
@@ -103,8 +134,12 @@ constexpr float kLIDAR_MESSAGE_TIME =
     static_cast<float>(kNUM_BLOCKS * kBLOCK_TIME_NS * 151) * 1e-9;
 constexpr float kLIDAR_TIME_EPSILON = 0.05 * kLIDAR_MESSAGE_TIME;
 constexpr float kLIDAR_ANGULAR_RESOLUTION = 0.003467542;
+constexpr int kBLOCK_SIZE = kFLAG_SIZE + kAZIMUTH_SIZE +
+                            kLIDAR_SCAN_LINES * (kRANGE_SIZE + kINTENSITY_SIZE);
 
 using VelodynePacket = uint8_t[1206];
 SphericalPoint::Vector decodeVelodynePacket(const VelodynePacket &packet);
-
+PointXYZIT::Vector toCloud(const VelodynePacket &packet);
+void appendToCloud(const VelodynePacket &packet,
+                   std::vector<PointXYZICT> &cloud);
 }; // namespace velodyne_decoder
