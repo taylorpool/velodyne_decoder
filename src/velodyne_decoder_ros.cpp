@@ -1,21 +1,6 @@
 #include "velodyne_decoder/velodyne_decoder_ros.hpp"
 
 namespace velodyne_decoder {
-PointXYZIT::Vector decodeVelodynePackets(
-    const std::vector<velodyne_msgs::VelodynePacket> &packets) {
-  SphericalPoint::Vector sphericalPoints;
-  PointXYZIT::Vector pointCloud;
-  PointXYZIT rectangularPoint;
-
-  for (const auto &packet : packets) {
-    sphericalPoints = decodeVelodynePacket(packet.data.elems);
-    for (const auto &sphericalPoint : sphericalPoints) {
-      rectangularPoint = toPointXYZIT(sphericalPoint);
-      pointCloud.push_back(rectangularPoint);
-    }
-  }
-  return pointCloud;
-}
 
 std::vector<PointXYZICT> decodeVelodynePackets2(
     const std::vector<velodyne_msgs::VelodynePacket> &packets) {
@@ -54,7 +39,7 @@ void decode(const velodyne_msgs::VelodyneScan::ConstPtr &msg,
   cloud.fields[3].datatype = sensor_msgs::PointField::FLOAT32;
   cloud.fields[3].count = 1;
 
-  cloud.is_bigendian = kIS_BIG_ENDIAN;
+  cloud.is_bigendian = (std::endian::native == std::endian::big);
 
   cloud.point_step = static_cast<uint32_t>(16);
 

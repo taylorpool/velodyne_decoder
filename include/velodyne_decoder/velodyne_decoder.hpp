@@ -1,22 +1,11 @@
 #pragma once
 
-#include <algorithm>
+#include <bit>
 #include <cmath>
 #include <cstdint>
-#include <ranges>
 #include <vector>
 
 namespace velodyne_decoder {
-
-struct SphericalPoint {
-  float azimuth;
-  float elevation;
-  float range;
-  float intensity;
-  uint8_t laserId;
-  int timeNs;
-  using Vector = std::vector<SphericalPoint>;
-};
 
 struct PointXYZICT {
   float x;
@@ -27,39 +16,8 @@ struct PointXYZICT {
   float timeOffset;
 };
 
-struct PointXYZIT {
-  float x;
-  float y;
-  float z;
-  float intensity;
-  float timeOffset;
-  using Vector = std::vector<PointXYZIT>;
-};
-
-struct PointXYZI {
-  float x;
-  float y;
-  float z;
-  float intensity;
-  using Vector = std::vector<PointXYZI>;
-};
-
-struct RectangularPoint {
-  float timeOffset;
-  float x;
-  float y;
-  float z;
-  float intensity;
-  using Vector = std::vector<RectangularPoint>;
-};
-
-PointXYZIT toPointXYZIT(const SphericalPoint &sphericalPoint);
-
-RectangularPoint toRectangularPoint(const SphericalPoint &sphericalPoint);
-
 constexpr int kNUM_BLOCKS = 12;
 constexpr int kLIDAR_SCAN_LINES = 32;
-constexpr int kPOINTS_PER_PACKET = kNUM_BLOCKS * kLIDAR_SCAN_LINES;
 constexpr float kDEG_TO_RAD = 0.01 * M_PI / 180.0;
 constexpr float kTWO_PI = 2.0f * M_PI;
 constexpr float kAZIMUTH_FIXED_OFFSET[kLIDAR_SCAN_LINES] = {
@@ -137,9 +95,24 @@ constexpr float kLIDAR_ANGULAR_RESOLUTION = 0.003467542;
 constexpr int kBLOCK_SIZE = kFLAG_SIZE + kAZIMUTH_SIZE +
                             kLIDAR_SCAN_LINES * (kRANGE_SIZE + kINTENSITY_SIZE);
 
+template <int N>
+requires(N == 1) uint8_t getBytes(const uint8_t bytes[1]) { return bytes[0]; }
+
+template <int N, std::endian Endian = std::endian::native>
+requires(N == 2 && Endian == std::endian::little) uint16_t
+    getBytes(const uint8_t bytes[2]) {
+  return (static_cast<uint16_t>(bytes[1]) << 8) |
+         static_cast<uint16_t>(bytes[0]);
+}
+
+template <int N, std::endian Endian = std::endian::native>
+requires(N == 2 && Endian == std::endian::big) uint16_t
+    getBytes(const uint8_t bytes[2]) {
+  return (static_cast<uint16_t>(bytes[0]) << 8) |
+         static_cast<uint16_t>(bytes[1]);
+}
+
 using VelodynePacket = uint8_t[1206];
-SphericalPoint::Vector decodeVelodynePacket(const VelodynePacket &packet);
-PointXYZIT::Vector toCloud(const VelodynePacket &packet);
 void appendToCloud(const VelodynePacket &packet,
                    std::vector<PointXYZICT> &cloud);
 }; // namespace velodyne_decoder
