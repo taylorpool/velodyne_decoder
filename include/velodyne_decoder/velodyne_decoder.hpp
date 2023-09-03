@@ -1,20 +1,13 @@
 #pragma once
 
+#include "velodyne_decoder/point.hpp"
+
 #include <bit>
 #include <cmath>
 #include <cstdint>
 #include <vector>
 
 namespace velodyne_decoder {
-
-struct PointXYZICT {
-  float x;
-  float y;
-  float z;
-  uint8_t intensity;
-  uint8_t channel;
-  float timeOffset;
-};
 
 constexpr int kNUM_BLOCKS = 12;
 constexpr int kLIDAR_SCAN_LINES = 32;
@@ -96,18 +89,21 @@ constexpr int kBLOCK_SIZE = kFLAG_SIZE + kAZIMUTH_SIZE +
                             kLIDAR_SCAN_LINES * (kRANGE_SIZE + kINTENSITY_SIZE);
 
 template <int N>
-requires(N == 1) uint8_t getBytes(const uint8_t bytes[1]) { return bytes[0]; }
+  requires(N == 1)
+uint8_t getBytes(const uint8_t bytes[1]) {
+  return bytes[0];
+}
 
 template <int N, std::endian Endian = std::endian::native>
-requires(N == 2 && Endian == std::endian::little) uint16_t
-    getBytes(const uint8_t bytes[2]) {
+  requires(N == 2 && Endian == std::endian::little)
+uint16_t getBytes(const uint8_t bytes[2]) {
   return (static_cast<uint16_t>(bytes[1]) << 8) |
          static_cast<uint16_t>(bytes[0]);
 }
 
 template <int N, std::endian Endian = std::endian::native>
-requires(N == 2 && Endian == std::endian::big) uint16_t
-    getBytes(const uint8_t bytes[2]) {
+  requires(N == 2 && Endian == std::endian::big)
+uint16_t getBytes(const uint8_t bytes[2]) {
   return (static_cast<uint16_t>(bytes[0]) << 8) |
          static_cast<uint16_t>(bytes[1]);
 }

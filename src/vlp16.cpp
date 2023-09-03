@@ -1,6 +1,6 @@
 #include "velodyne_decoder/vlp16.hpp"
 
-namespace vlp16 {
+namespace velodyne_decoder::vlp16 {
 
 void appendToCloud(const VelodynePacket &packet,
                    std::vector<PointXYZICT> &cloud) {
@@ -12,50 +12,27 @@ void appendToCloud(const VelodynePacket &packet,
         static_cast<float>(getBytes<kAZIMUTH_SIZE>(&packet[index])) *
         kCENTI_TO_UNIT * kDEG_TO_RAD;
     index += kAZIMUTH_SIZE;
-    for (size_t channel = 0; channel < kNUM_CHANNELS; ++channel) {
+    for (const auto &channel : firingToChannel) {
       const float range =
           static_cast<float>(static_cast<uint16_t>(2) *
                              getBytes<kRANGE_SIZE>(&packet[index])) *
           kMILLI_TO_UNIT;
       index += kRANGE_SIZE;
-      const float intensity =
-          static_cast<float>(getBytes<kINTENSITY_SIZE>(&packet[index]));
+      const uint8_t intensity = getBytes<kINTENSITY_SIZE>(&packet[index]);
       index += kINTENSITY_SIZE;
       const float timeOffset = kFIRING_TIME * static_cast<float>(sequence) +
                                kCYCLE_TIME * static_cast<float>(channel);
       sequence += 1;
-      const float azimuth = 0.0;
-      const float elevation = 0.0;
-      const float xyRange = range * std::cos(elevation);
+      const float azimuth = blockAzimuth;
+      const float xyRange = range * channelToCosVerticalAngle[channel];
       cloud.push_back({.x = xyRange * std::sin(azimuth),
                        .y = xyRange * std::cos(azimuth),
-                       .z = range * std::sin(elevation),
-                       .intensity = intensity,
-                       .channel = static_cast<uint8_t>(channel),
-                       .timeOffset = timeOffset});
-    }
-    for (size_t channel = 0; channel < kNUM_CHANNELS; ++channel) {
-      const float range =
-          static_cast<float>(static_cast<uint16_t>(2) *
-                             getBytes<kRANGE_SIZE>(&packet[index])) *
-          kMILLI_TO_UNIT;
-      index += kRANGE_SIZE;
-      const float intensity =
-          static_cast<float>(getBytes<kINTENSITY_SIZE>(&packet[index]));
-      index += kINTENSITY_SIZE;
-      const float timeOffset = kFIRING_TIME * static_cast<float>(sequence) +
-                               kCYCLE_TIME * static_cast<float>(channel);
-      sequence += 1;
-      const float azimuth = 0.0;
-      const float elevation = 0.0;
-      const float xyRange = range * std::cos(elevation);
-      cloud.push_back({.x = xyRange * std::sin(azimuth),
-                       .y = xyRange * std::cos(azimuth),
-                       .z = range * std::sin(elevation),
+                       .z = range * channelToSinVerticalAngle[channel] +
+                            channelToVerticalCorrection[channel],
                        .intensity = intensity,
                        .channel = static_cast<uint8_t>(channel),
                        .timeOffset = timeOffset});
     }
   }
 }
-} // namespace vlp16
+} // namespace velodyne_decoder::vlp16

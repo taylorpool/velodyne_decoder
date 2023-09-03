@@ -34,12 +34,9 @@ target_sources(VelodyneDecoder
   TYPE HEADERS
   BASE_DIRS include
   FILES
+    include/velodyne_decoder/point.hpp
     include/velodyne_decoder/velodyne_decoder.hpp
     include/velodyne_decoder/vlp16.hpp
-)
-
-add_executable(main
-  src/main.cpp
 )
 
 if(VELODYNE_DECODER_BUILD_ROS1)

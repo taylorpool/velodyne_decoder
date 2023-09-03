@@ -10,6 +10,9 @@ stdenv.mkDerivation {
     rosPackages.noetic.rosparam
     rosPackages.noetic.rosbag
     rosPackages.noetic.rostopic
+    rosPackages.noetic.rosnode
+    rosPackages.noetic.ros-core
+    rosPackages.noetic.tf2
     llvmPackages_16.clang-unwrapped
   ];
 
