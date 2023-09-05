@@ -4,16 +4,6 @@
 
 namespace velodyne_decoder {
 
-std::vector<PointXYZICT> decodeVelodynePackets2(
-    const std::vector<velodyne_msgs::VelodynePacket> &packets) {
-  std::vector<PointXYZICT> cloud;
-  std::ranges::for_each(packets, [&cloud](const auto &packet) {
-    float azimuth = -1.0f;
-    vlp16::appendToCloud(packet.data.elems, cloud, azimuth);
-  });
-  return cloud;
-}
-
 void toMsg(const std::vector<PointXYZICT> &cloud,
            sensor_msgs::PointCloud2 &msg) {
   msg.height = 1;

@@ -18,10 +18,6 @@ const float kTWO_PI = std::numbers::pi_v<float> * 2.0f;
 const float kCENTI_TO_UNIT = 0.01f;
 const float kMILLI_TO_UNIT = 0.001f;
 
-const float kCYCLE_TIME = 2.304e-6f;
-const float kRECHARGE_TIME = 18.43e-6f;
-const float kFIRING_TIME = 55.296e-6f;
-
 const size_t kPACKET_SIZE = 1206;
 const size_t kFLAG_SIZE = 2;
 const size_t kAZIMUTH_SIZE = 2;
@@ -29,12 +25,16 @@ const size_t kRANGE_SIZE = 2;
 const size_t kINTENSITY_SIZE = 1;
 
 const size_t kNUM_BLOCKS = 12;
-const size_t kNUM_SEQUENCES = 24;
 const size_t kNUM_CHANNELS = 16;
 const size_t kSEQUENCES_PER_BLOCK = 2;
 const size_t kBLOCK_SIZE =
     kFLAG_SIZE + kAZIMUTH_SIZE +
     kNUM_CHANNELS * kSEQUENCES_PER_BLOCK * (kRANGE_SIZE + kINTENSITY_SIZE);
+
+const float kCHANNEL_TIME = 2.304e-6f;
+const float kRECHARGE_TIME = 18.43e-6f;
+const float kSEQUENCE_TIME = kCHANNEL_TIME * kNUM_CHANNELS + kRECHARGE_TIME;
+const float kBLOCK_TIME = kSEQUENCE_TIME * kSEQUENCES_PER_BLOCK;
 
 const std::array<float, kNUM_CHANNELS> channelToVerticalAngle{
     -15.0f * kDEG_TO_RAD, 1.0f * kDEG_TO_RAD,   -13.0f * kDEG_TO_RAD,
@@ -76,12 +76,6 @@ const std::array<size_t, 2 * kNUM_CHANNELS> firingToChannel{
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-template <size_t sequenceIndex, size_t pointIndex>
-const float computeTimeOffset() {
-  return kFIRING_TIME * static_cast<float>(sequenceIndex) +
-         kCYCLE_TIME * static_cast<float>(pointIndex);
-}
-
 template <size_t N>
   requires(N == 1)
 uint8_t getBytes(const uint8_t bytes[1]) {
@@ -110,8 +104,5 @@ struct VelodyneDecoder {
   void appendToCloud(const VelodynePacket &packet,
                      std::vector<PointXYZICT> &cloud);
 };
-
-void appendToCloud(const VelodynePacket &packet,
-                   std::vector<PointXYZICT> &cloud, float &azimuth);
 
 } // namespace velodyne_decoder::vlp16
