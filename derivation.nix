@@ -1,4 +1,4 @@
-{ lib, stdenv, eigen, cmake, rosPackages, python311, clang-tools_16, ninja }:
+{ lib, stdenv, eigen, cmake, rosPackages, python311, clang-tools_16, ninja, cmake-language-server }:
 stdenv.mkDerivation {
   pname = "velodyne_decoder";
   version = "0.1.0";
@@ -7,6 +7,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     cmake 
+    cmake-language-server
     rosPackages.noetic.rosparam
     rosPackages.noetic.rosbag
     rosPackages.noetic.rostopic

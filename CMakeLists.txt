@@ -7,22 +7,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(VELODYNE_DECODER_BUILD_ROS1 "Build ROS1 Package" OFF)
-if(VELODYNE_DECODER_BUILD_ROS1)
-  find_package(catkin REQUIRED 
-    COMPONENTS
-      roscpp
-      sensor_msgs
-      velodyne_msgs
-  )
-  catkin_package(
-    CATKIN_DEPENDS
-      velodyne_msgs
-      roscpp
-      sensor_msgs
-  )
-endif()
-
 add_library(VelodyneDecoder
   STATIC
   src/velodyne_decoder.cpp
@@ -39,7 +23,21 @@ target_sources(VelodyneDecoder
     include/velodyne_decoder/vlp16.hpp
 )
 
+option(VELODYNE_DECODER_BUILD_ROS1 "Build ROS1 Package" OFF)
+
 if(VELODYNE_DECODER_BUILD_ROS1)
+  find_package(catkin REQUIRED 
+    COMPONENTS
+      roscpp
+      sensor_msgs
+      velodyne_msgs
+  )
+  catkin_package(
+    CATKIN_DEPENDS
+      velodyne_msgs
+      roscpp
+      sensor_msgs
+  )
   add_library(VelodyneDecoder_ROS1
     STATIC
     src/velodyne_decoder_ros.cpp

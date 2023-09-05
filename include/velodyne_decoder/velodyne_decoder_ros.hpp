@@ -9,7 +9,10 @@
 
 namespace velodyne_decoder {
 
-void decode(const velodyne_msgs::VelodyneScanConstPtr &msg,
-            sensor_msgs::PointCloud2 &cloud);
+std::vector<PointXYZICT> decodeVelodynePackets2(
+    const std::vector<velodyne_msgs::VelodynePacket> &packets);
+
+void toMsg(const std::vector<PointXYZICT> &cloud,
+           sensor_msgs::PointCloud2 &msg);
 
 } // namespace velodyne_decoder
