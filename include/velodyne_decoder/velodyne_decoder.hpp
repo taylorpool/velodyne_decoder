@@ -2,17 +2,20 @@
 
 #include "velodyne_decoder/point.hpp"
 
+#include <algorithm>
 #include <bit>
 #include <cmath>
 #include <cstdint>
+#include <numbers>
+#include <ranges>
 #include <vector>
 
 namespace velodyne_decoder {
 
 constexpr int kNUM_BLOCKS = 12;
 constexpr int kLIDAR_SCAN_LINES = 32;
-constexpr float kDEG_TO_RAD = 0.01 * M_PI / 180.0;
-constexpr float kTWO_PI = 2.0f * M_PI;
+constexpr float kDEG_TO_RAD = std::numbers::pi_v<float> / 180.0f;
+constexpr float kTWO_PI = 2.0f * std::numbers::pi_v<float>;
 constexpr float kAZIMUTH_FIXED_OFFSET[kLIDAR_SCAN_LINES] = {
     0.02443461, -0.07330383, 0.02443461, -0.02443461, 0.02443461, -0.02443461,
     0.07330383, -0.02443461, 0.02443461, -0.07330383, 0.02443461, -0.02443461,
@@ -87,23 +90,30 @@ constexpr float kLIDAR_TIME_EPSILON = 0.05 * kLIDAR_MESSAGE_TIME;
 constexpr float kLIDAR_ANGULAR_RESOLUTION = 0.003467542;
 constexpr int kBLOCK_SIZE = kFLAG_SIZE + kAZIMUTH_SIZE +
                             kLIDAR_SCAN_LINES * (kRANGE_SIZE + kINTENSITY_SIZE);
+struct VelodyneParams {
+  std::vector<int> firingToChannel;
+  std::vector<float> channelToElevation;
+  std::vector<float> channelToSinElevation;
+  std::vector<float> channelToCosElevation;
+  std::vector<float> channelToAzimuth;
+
+  static VelodyneParams vlp16();
+  static VelodyneParams vlp32c();
+};
 
 template <int N>
-  requires(N == 1)
-uint8_t getBytes(const uint8_t bytes[1]) {
-  return bytes[0];
-}
+requires(N == 1) uint8_t getBytes(const uint8_t bytes[1]) { return bytes[0]; }
 
 template <int N, std::endian Endian = std::endian::native>
-  requires(N == 2 && Endian == std::endian::little)
-uint16_t getBytes(const uint8_t bytes[2]) {
+requires(N == 2 && Endian == std::endian::little) uint16_t
+    getBytes(const uint8_t bytes[2]) {
   return (static_cast<uint16_t>(bytes[1]) << 8) |
          static_cast<uint16_t>(bytes[0]);
 }
 
 template <int N, std::endian Endian = std::endian::native>
-  requires(N == 2 && Endian == std::endian::big)
-uint16_t getBytes(const uint8_t bytes[2]) {
+requires(N == 2 && Endian == std::endian::big) uint16_t
+    getBytes(const uint8_t bytes[2]) {
   return (static_cast<uint16_t>(bytes[0]) << 8) |
          static_cast<uint16_t>(bytes[1]);
 }
