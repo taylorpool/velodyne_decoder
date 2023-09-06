@@ -1,28 +1,12 @@
 #pragma once
 
-#include "velodyne_decoder/point.hpp"
+#include "velodyne_decoder/velodyne_decoder.hpp"
 
-#include <algorithm>
 #include <array>
-#include <bit>
 #include <cmath>
-#include <cstdint>
-#include <numbers>
-#include <ranges>
 #include <vector>
 
 namespace velodyne_decoder::vlp16 {
-
-const float kDEG_TO_RAD = std::numbers::pi_v<float> / 180.0f;
-const float kTWO_PI = std::numbers::pi_v<float> * 2.0f;
-const float kCENTI_TO_UNIT = 0.01f;
-const float kMILLI_TO_UNIT = 0.001f;
-
-const size_t kPACKET_SIZE = 1206;
-const size_t kFLAG_SIZE = 2;
-const size_t kAZIMUTH_SIZE = 2;
-const size_t kRANGE_SIZE = 2;
-const size_t kINTENSITY_SIZE = 1;
 
 const size_t kNUM_BLOCKS = 12;
 const size_t kNUM_CHANNELS = 16;
@@ -71,32 +55,6 @@ const std::array<float, kNUM_CHANNELS> channelToVerticalCorrection{
     -6.6f * kMILLI_TO_UNIT, 3.7f * kMILLI_TO_UNIT,  -8.1f * kMILLI_TO_UNIT,
     2.2f * kMILLI_TO_UNIT,  -9.7f * kMILLI_TO_UNIT, 0.7f * kMILLI_TO_UNIT,
     -11.2f * kMILLI_TO_UNIT};
-
-const std::array<size_t, 2 * kNUM_CHANNELS> firingToChannel{
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-
-template <size_t N>
-  requires(N == 1)
-uint8_t getBytes(const uint8_t bytes[1]) {
-  return bytes[0];
-}
-
-template <size_t N, std::endian Endian = std::endian::native>
-  requires(N == 2 && Endian == std::endian::little)
-uint16_t getBytes(const uint8_t bytes[2]) {
-  return (static_cast<uint16_t>(bytes[1]) << 8) |
-         static_cast<uint16_t>(bytes[0]);
-}
-
-template <size_t N, std::endian Endian = std::endian::native>
-  requires(N == 2 && Endian == std::endian::big)
-uint16_t getBytes(const uint8_t bytes[2]) {
-  return (static_cast<uint16_t>(bytes[0]) << 8) |
-         static_cast<uint16_t>(bytes[1]);
-}
-
-using VelodynePacket = uint8_t[kPACKET_SIZE];
 
 struct VelodyneDecoder {
   float m_azimuth;

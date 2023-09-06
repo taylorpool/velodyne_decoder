@@ -11,6 +11,7 @@ add_library(VelodyneDecoder
   STATIC
   src/velodyne_decoder.cpp
   src/vlp16.cpp
+  src/vlp32c.cpp
 )
 target_sources(VelodyneDecoder
   PUBLIC
@@ -21,6 +22,7 @@ target_sources(VelodyneDecoder
     include/velodyne_decoder/point.hpp
     include/velodyne_decoder/velodyne_decoder.hpp
     include/velodyne_decoder/vlp16.hpp
+    include/velodyne_decoder/vlp32c.hpp
 )
 
 option(VELODYNE_DECODER_BUILD_ROS1 "Build ROS1 Package" OFF)
@@ -38,6 +40,7 @@ if(VELODYNE_DECODER_BUILD_ROS1)
       roscpp
       sensor_msgs
   )
+
   add_library(VelodyneDecoder_ROS1
     STATIC
     src/velodyne_decoder_ros.cpp
@@ -54,10 +57,18 @@ if(VELODYNE_DECODER_BUILD_ROS1)
     VelodyneDecoder
     ${catkin_LIBRARIES}
   )
-  add_executable(velodyne_decoder_node
-    src/velodyne_decoder_node.cpp
+
+  add_executable(vlp16_node
+    src/vlp16_node.cpp
   )
-  target_link_libraries(velodyne_decoder_node
+  target_link_libraries(vlp16_node
+    VelodyneDecoder_ROS1
+  )
+
+  add_executable(vlp32c_node
+    src/vlp32c_node.cpp
+  )
+  target_link_libraries(vlp32c_node
     VelodyneDecoder_ROS1
   )
 endif()
