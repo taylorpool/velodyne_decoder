@@ -79,6 +79,8 @@ install(TARGETS VelodyneDecoder
   LIBRARY
   RUNTIME
   FILE_SET velodyne_decoder_headers
+    DESTINATION include
+
 )
 install(EXPORT VelodyneDecoderTargets
   NAMESPACE VelodyneDecoder::
