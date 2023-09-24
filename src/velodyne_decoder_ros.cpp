@@ -2,6 +2,9 @@
 
 #include "velodyne_decoder/vlp16.hpp"
 
+#include <ranges>
+#include <span>
+
 namespace velodyne_decoder {
 
 void toMsg(const std::vector<PointXYZICT> &cloud,
@@ -43,46 +46,37 @@ void toMsg(const std::vector<PointXYZICT> &cloud,
 
   msg.is_bigendian = (std::endian::native == std::endian::big);
 
-  msg.point_step = static_cast<uint32_t>(18);
+  msg.point_step = static_cast<uint32_t>(
+      sizeof(PointXYZICT::x) + sizeof(PointXYZICT::y) + sizeof(PointXYZICT::z) +
+      sizeof(PointXYZICT::intensity) + sizeof(PointXYZICT::channel) +
+      sizeof(PointXYZICT::timeOffset));
 
   msg.row_step = msg.width * msg.point_step;
 
   msg.data.clear();
   msg.data.reserve(msg.row_step * msg.height);
-
   for (const auto &point : cloud) {
-    const uint8_t *xdata = reinterpret_cast<const uint8_t *>(&point.x);
-    msg.data.push_back(xdata[0]);
-    msg.data.push_back(xdata[1]);
-    msg.data.push_back(xdata[2]);
-    msg.data.push_back(xdata[3]);
-
-    const uint8_t *ydata = reinterpret_cast<const uint8_t *>(&point.y);
-    msg.data.push_back(ydata[0]);
-    msg.data.push_back(ydata[1]);
-    msg.data.push_back(ydata[2]);
-    msg.data.push_back(ydata[3]);
-
-    const uint8_t *zdata = reinterpret_cast<const uint8_t *>(&point.z);
-    msg.data.push_back(zdata[0]);
-    msg.data.push_back(zdata[1]);
-    msg.data.push_back(zdata[2]);
-    msg.data.push_back(zdata[3]);
-
-    const uint8_t *intensityData =
-        reinterpret_cast<const uint8_t *>(&point.intensity);
-    msg.data.push_back(intensityData[0]);
-
-    const uint8_t *channelData =
-        reinterpret_cast<const uint8_t *>(&point.channel);
-    msg.data.push_back(channelData[0]);
-
-    const uint8_t *timeOffsetData =
-        reinterpret_cast<const uint8_t *>(&point.timeOffset);
-    msg.data.push_back(timeOffsetData[0]);
-    msg.data.push_back(timeOffsetData[1]);
-    msg.data.push_back(timeOffsetData[2]);
-    msg.data.push_back(timeOffsetData[3]);
+    std::ranges::copy(
+        std::span{reinterpret_cast<const uint8_t *>(&point.x), sizeof(point.x)},
+        std::back_inserter(msg.data));
+    std::ranges::copy(
+        std::span{reinterpret_cast<const uint8_t *>(&point.y), sizeof(point.y)},
+        std::back_inserter(msg.data));
+    std::ranges::copy(
+        std::span{reinterpret_cast<const uint8_t *>(&point.z), sizeof(point.z)},
+        std::back_inserter(msg.data));
+    std::ranges::copy(
+        std::span{reinterpret_cast<const uint8_t *>(&point.intensity),
+                  sizeof(point.intensity)},
+        std::back_inserter(msg.data));
+    std::ranges::copy(
+        std::span{reinterpret_cast<const uint8_t *>(&point.channel),
+                  sizeof(point.channel)},
+        std::back_inserter(msg.data));
+    std::ranges::copy(
+        std::span{reinterpret_cast<const uint8_t *>(&point.timeOffset),
+                  sizeof(point.timeOffset)},
+        std::back_inserter(msg.data));
   }
   msg.is_dense = false;
 }

@@ -4,7 +4,8 @@ project(velodyne_decoder
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_library(VelodyneDecoder
@@ -76,8 +77,11 @@ endif()
 install(TARGETS VelodyneDecoder
   EXPORT VelodyneDecoderTargets
   ARCHIVE
+    DESTINATION lib
   LIBRARY
+    DESTINATION lib
   RUNTIME
+    DESTINATION bin
   FILE_SET velodyne_decoder_headers
     DESTINATION include
 

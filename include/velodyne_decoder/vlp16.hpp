@@ -2,8 +2,11 @@
 
 #include "velodyne_decoder/velodyne_decoder.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
+#include <ranges>
+#include <type_traits>
 #include <vector>
 
 namespace velodyne_decoder::vlp16 {
@@ -56,11 +59,69 @@ const std::array<float, kNUM_CHANNELS> channelToVerticalCorrection{
     2.2f * kMILLI_TO_UNIT,  -9.7f * kMILLI_TO_UNIT, 0.7f * kMILLI_TO_UNIT,
     -11.2f * kMILLI_TO_UNIT};
 
+template <typename T>
+concept VelodyneScanInput =
+    std::ranges::input_range<T> &&
+    std::is_same<std::ranges::range_value_t<T>, VelodynePacket>::value;
+
 struct VelodyneDecoder {
   float m_azimuth;
   VelodyneDecoder() : m_azimuth(-1.0) {}
-  void appendToCloud(const VelodynePacket &packet,
-                     std::vector<PointXYZICT> &cloud);
+
+  std::vector<PointXYZICT>
+  decode(const std::ranges::input_range auto &packets) {
+    std::vector<PointXYZICT> cloud;
+    std::ranges::for_each(packets, [this, &cloud](const auto &packet) {
+      size_t index = 0;
+      for (size_t block = 0; block < kNUM_BLOCKS; ++block) {
+        index += kFLAG_SIZE;
+        const float blockAzimuth =
+            static_cast<float>(getBytes<kAZIMUTH_SIZE>(&packet[index])) *
+                kCENTI_TO_UNIT * kDEG_TO_RAD +
+            std::numbers::pi_v<float> / 2.0f;
+
+        float azimuthRate = 0.0;
+        if (m_azimuth >= 0.0) {
+          azimuthRate = (blockAzimuth - m_azimuth);
+          if (azimuthRate < 0) {
+            azimuthRate += kTWO_PI;
+          }
+          azimuthRate /= kSEQUENCE_TIME;
+        }
+
+        index += kAZIMUTH_SIZE;
+        for (size_t sequence = 0; sequence < kSEQUENCES_PER_BLOCK; ++sequence) {
+          for (size_t channel = 0; channel < kNUM_CHANNELS; ++channel) {
+            const float range =
+                static_cast<float>(static_cast<uint16_t>(2) *
+                                   getBytes<kRANGE_SIZE>(&packet[index])) *
+                kMILLI_TO_UNIT;
+            index += kRANGE_SIZE;
+            const uint8_t intensity = getBytes<kINTENSITY_SIZE>(&packet[index]);
+            index += kINTENSITY_SIZE;
+            const float timeOffset =
+                kBLOCK_TIME * static_cast<float>(block) +
+                kSEQUENCE_TIME * static_cast<float>(sequence) +
+                kCHANNEL_TIME * static_cast<float>(channel);
+            const float preciseAzimuth =
+                blockAzimuth +
+                azimuthRate * (kCHANNEL_TIME * static_cast<float>(channel) +
+                               kSEQUENCE_TIME * sequence);
+
+            const float xyRange = range * channelToCosVerticalAngle[channel];
+            cloud.push_back({.x = xyRange * std::sin(preciseAzimuth),
+                             .y = xyRange * std::cos(preciseAzimuth),
+                             .z = range * channelToSinVerticalAngle[channel] +
+                                  channelToVerticalCorrection[channel],
+                             .intensity = intensity,
+                             .channel = static_cast<uint8_t>(channel),
+                             .timeOffset = timeOffset});
+          }
+        }
+      }
+    });
+    return cloud;
+  }
 };
 
 } // namespace velodyne_decoder::vlp16

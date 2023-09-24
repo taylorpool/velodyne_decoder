@@ -32,11 +32,10 @@ int main(int argc, char *argv[]) {
       [&cloudPublisher,
        &decoder](const velodyne_msgs::VelodyneScan::ConstPtr &msg) {
         sensor_msgs::PointCloud2 cloud;
-        std::vector<velodyne_decoder::PointXYZICT> points;
-        std::ranges::for_each(
-            msg->packets, [&decoder, &points](const auto &packet) {
-              decoder.appendToCloud(packet.data.elems, points);
-            });
+        auto packets = std::ranges::views::transform(
+            msg->packets, [](const auto &packet) { return packet.data.elems; });
+        std::vector<velodyne_decoder::PointXYZICT> points =
+            decoder.decode(packets);
         velodyne_decoder::toMsg(points, cloud);
         cloud.header = msg->header;
         cloudPublisher.publish(cloud);
