@@ -4,9 +4,11 @@ project(velodyne_decoder
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+find_package(Eigen3 3.4 REQUIRED)
 
 add_library(VelodyneDecoder
   STATIC
@@ -24,6 +26,9 @@ target_sources(VelodyneDecoder
     include/velodyne_decoder/velodyne_decoder.hpp
     include/velodyne_decoder/vlp16.hpp
     include/velodyne_decoder/vlp32c.hpp
+)
+target_link_libraries(VelodyneDecoder
+  Eigen3::Eigen
 )
 
 option(VELODYNE_DECODER_BUILD_ROS1 "Build ROS1 Package" OFF)
@@ -59,12 +64,12 @@ if(VELODYNE_DECODER_BUILD_ROS1)
     ${catkin_LIBRARIES}
   )
 
-  add_executable(vlp16_node
-    src/vlp16_node.cpp
-  )
-  target_link_libraries(vlp16_node
-    VelodyneDecoder_ROS1
-  )
+  # add_executable(vlp16_node
+  #   src/vlp16_node.cpp
+  # )
+  # target_link_libraries(vlp16_node
+  #   VelodyneDecoder_ROS1
+  # )
 
   add_executable(vlp32c_node
     src/vlp32c_node.cpp

@@ -1,7 +1,5 @@
 #include "velodyne_decoder/velodyne_decoder_ros.hpp"
 
-#include "velodyne_decoder/vlp16.hpp"
-
 #include <ranges>
 #include <span>
 

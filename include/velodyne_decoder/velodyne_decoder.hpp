@@ -8,18 +8,9 @@
 
 namespace velodyne_decoder {
 
-const float kDEG_TO_RAD = std::numbers::pi_v<float> / 180.0f;
-const float kTWO_PI = std::numbers::pi_v<float> * 2.0f;
-const float kCENTI_TO_UNIT = 0.01f;
-const float kMILLI_TO_UNIT = 0.001f;
+using VelodynePacket = uint8_t[1206];
 
-const std::size_t kPACKET_SIZE = 1206;
-const std::size_t kFLAG_SIZE = 2;
-const std::size_t kAZIMUTH_SIZE = 2;
-const std::size_t kRANGE_SIZE = 2;
-const std::size_t kINTENSITY_SIZE = 1;
-
-using VelodynePacket = uint8_t[kPACKET_SIZE];
+constexpr float kDEG_TO_RAD = std::numbers::pi_v<float> / 180.0f;
 
 template <std::size_t N>
   requires(N == 1)
