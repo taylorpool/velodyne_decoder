@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
       [&cloudPublisher,
        &decoder](const velodyne_msgs::VelodyneScan::ConstPtr &msg) {
         sensor_msgs::PointCloud2 cloud;
-        auto packets = std::ranges::views::transform(
+        const auto packets = std::ranges::views::transform(
             msg->packets, [](const auto &packet) { return packet.data.elems; });
         std::vector<velodyne_decoder::PointXYZICT> points =
             decoder.decode(packets);

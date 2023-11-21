@@ -64,12 +64,12 @@ if(VELODYNE_DECODER_BUILD_ROS1)
     ${catkin_LIBRARIES}
   )
 
-  # add_executable(vlp16_node
-  #   src/vlp16_node.cpp
-  # )
-  # target_link_libraries(vlp16_node
-  #   VelodyneDecoder_ROS1
-  # )
+  add_executable(vlp16_node
+    src/vlp16_node.cpp
+  )
+  target_link_libraries(vlp16_node
+    VelodyneDecoder_ROS1
+  )
 
   add_executable(vlp32c_node
     src/vlp32c_node.cpp

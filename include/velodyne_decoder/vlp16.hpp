@@ -27,15 +27,17 @@ public:
 
   std::vector<PointXYZICT>
   decode(const std::ranges::input_range auto &packets) {
-    constexpr std::array<float, kNUM_CHANNELS> channelToVerticalCorrection{
-        11.2f * kMILLI_TO_UNIT, -0.7f * kMILLI_TO_UNIT, 9.7f * kMILLI_TO_UNIT,
-        -2.2f * kMILLI_TO_UNIT, 8.1f * kMILLI_TO_UNIT,  -3.7f * kMILLI_TO_UNIT,
-        6.6f * kMILLI_TO_UNIT,  -5.1f * kMILLI_TO_UNIT, 5.1f * kMILLI_TO_UNIT,
-        -6.6f * kMILLI_TO_UNIT, 3.7f * kMILLI_TO_UNIT,  -8.1f * kMILLI_TO_UNIT,
-        2.2f * kMILLI_TO_UNIT,  -9.7f * kMILLI_TO_UNIT, 0.7f * kMILLI_TO_UNIT,
-        -11.2f * kMILLI_TO_UNIT};
     std::vector<PointXYZICT> cloud;
     std::ranges::for_each(packets, [this, &cloud](const auto &packet) {
+      constexpr std::array<float, kNUM_CHANNELS> channelToVerticalCorrection{
+          11.2f * kMILLI_TO_UNIT, -0.7f * kMILLI_TO_UNIT,
+          9.7f * kMILLI_TO_UNIT,  -2.2f * kMILLI_TO_UNIT,
+          8.1f * kMILLI_TO_UNIT,  -3.7f * kMILLI_TO_UNIT,
+          6.6f * kMILLI_TO_UNIT,  -5.1f * kMILLI_TO_UNIT,
+          5.1f * kMILLI_TO_UNIT,  -6.6f * kMILLI_TO_UNIT,
+          3.7f * kMILLI_TO_UNIT,  -8.1f * kMILLI_TO_UNIT,
+          2.2f * kMILLI_TO_UNIT,  -9.7f * kMILLI_TO_UNIT,
+          0.7f * kMILLI_TO_UNIT,  -11.2f * kMILLI_TO_UNIT};
       constexpr size_t kNUM_BLOCKS = 12;
       constexpr size_t kSEQUENCES_PER_BLOCK = 2;
       constexpr size_t kFLAG_SIZE = 2;
