@@ -105,6 +105,7 @@ public:
     });
     return cloud;
   }
+  
 };
 
 } // namespace velodyne_decoder::vlp16

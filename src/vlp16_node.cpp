@@ -26,17 +26,20 @@ int main(int argc, char *argv[]) {
       privateNode.advertise<sensor_msgs::PointCloud2>(cloudTopic, 2);
 
   velodyne_decoder::vlp16::VelodyneDecoder decoder;
+  velodyne_decoder::RacerDecoder racerDecoder;
+  velodyne_decoder::VLP16Decoder newDecoder;
 
   auto velodyneSubscriber = publicNode.subscribe<velodyne_msgs::VelodyneScan>(
       packetTopic, 1,
       [&cloudPublisher,
-       &decoder](const velodyne_msgs::VelodyneScan::ConstPtr &msg) {
+       &decoder, &newDecoder](const velodyne_msgs::VelodyneScan::ConstPtr &msg) {
         sensor_msgs::PointCloud2 cloud;
-        const auto packets = std::ranges::views::transform(
-            msg->packets, [](const auto &packet) { return packet.data.elems; });
-        std::vector<velodyne_decoder::PointXYZICT> points =
-            decoder.decode(packets);
-        velodyne_decoder::toMsg(points, cloud);
+        // const auto packets = std::ranges::views::transform(
+        //     msg->packets, [](const auto &packet) { return packet.data.elems; });
+        const velodyne_decoder::LidarScanStamped scan =
+            newDecoder.decode(msg);
+            // decoder.decode(packets);
+        velodyne_decoder::toMsg(scan, cloud);
         cloud.header = msg->header;
         cloudPublisher.publish(cloud);
       });

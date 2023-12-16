@@ -8,6 +8,7 @@
 #include <numbers>
 #include <ranges>
 #include <vector>
+#include <iostream>
 
 namespace velodyne_decoder::vlp32c {
 
@@ -54,7 +55,8 @@ public:
         index += kFLAG_SIZE;
         const float blockAzimuth =
             static_cast<float>(getBytes<kAZIMUTH_SIZE>(&packet[index])) *
-            kCENTI_TO_UNIT * kDEG_TO_RAD;
+            kCENTI_TO_UNIT * kDEG_TO_RAD +
+            std::numbers::pi_v<float> / 2.0f;
 
         float azimuthRate = 0.0;
         if (m_azimuth >= 0.0) {
@@ -79,6 +81,7 @@ public:
                 kBLOCK_TIME * static_cast<float>(block) +
                 kSEQUENCE_TIME * static_cast<float>(sequence) +
                 kCHANNEL_TIME * static_cast<float>(channel);
+            std::cout << timeOffset << "\n";
             float preciseAzimuth =
                 blockAzimuth +
                 azimuthRate * (kCHANNEL_TIME * static_cast<float>(channel) +

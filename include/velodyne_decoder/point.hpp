@@ -32,4 +32,10 @@ struct PointXYZICT {
   }
 };
 
+struct LidarScanStamped
+{
+    double stamp;
+    std::vector<PointXYZICT> cloud;
+};
+
 } // namespace velodyne_decoder

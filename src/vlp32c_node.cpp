@@ -26,17 +26,22 @@ int main(int argc, char *argv[]) {
       privateNode.advertise<sensor_msgs::PointCloud2>(cloudTopic, 2);
 
   velodyne_decoder::vlp32c::VelodyneDecoder decoder;
+  velodyne_decoder::RacerDecoder racerDecoder;
+  velodyne_decoder::VLP32CDecoder newDecoder;
 
   auto velodyneSubscriber = publicNode.subscribe<velodyne_msgs::VelodyneScan>(
       packetTopic, 1,
       [&cloudPublisher,
-       &decoder](const velodyne_msgs::VelodyneScan::ConstPtr &msg) {
+       &decoder, &racerDecoder, &newDecoder](const velodyne_msgs::VelodyneScan::ConstPtr &msg) {
         sensor_msgs::PointCloud2 cloud;
-        const auto packets = std::ranges::views::transform(
-            msg->packets, [](const auto &packet) { return packet.data.elems; });
-        std::vector<velodyne_decoder::PointXYZICT> points =
-            decoder.decode(packets);
-        velodyne_decoder::toMsg(points, cloud);
+        // const auto packets = std::ranges::views::transform(
+        //     msg->packets, [](const auto &packet) { return packet.data.elems; });
+        // std::vector<velodyne_decoder::PointXYZICT> points =
+        //     decoder.decode(packets);
+        // std::vector<velodyne_decoder::PointXYZICT> points = racerDecoder.decode(msg);
+        const auto scan = newDecoder.decode(msg);
+        // velodyne_decoder::toMsg(points, cloud);
+        velodyne_decoder::toMsg(scan, cloud);
         cloud.header = msg->header;
         cloudPublisher.publish(cloud);
       });
