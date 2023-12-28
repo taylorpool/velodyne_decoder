@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(Eigen3 3.4 REQUIRED)
+find_package(pcl_types REQUIRED)
 
 add_library(VelodyneDecoder
   STATIC
@@ -22,29 +22,30 @@ target_sources(VelodyneDecoder
   TYPE HEADERS
   BASE_DIRS include
   FILES
-    include/velodyne_decoder/point.hpp
     include/velodyne_decoder/velodyne_decoder.hpp
     include/velodyne_decoder/vlp16.hpp
     include/velodyne_decoder/vlp32c.hpp
 )
 target_link_libraries(VelodyneDecoder
-  Eigen3::Eigen
+  PCLTypes::PCLTypes
 )
 
-option(VELODYNE_DECODER_BUILD_ROS1 "Build ROS1 Package" OFF)
+add_library(VelodyneDecoder::VelodyneDecoder ALIAS VelodyneDecoder)
+
+option(VELODYNE_DECODER_BUILD_ROS1 "Build ROS1 Package" ON)
 
 if(VELODYNE_DECODER_BUILD_ROS1)
   find_package(catkin REQUIRED 
     COMPONENTS
       roscpp
-      sensor_msgs
       velodyne_msgs
+      pcl_types
   )
   catkin_package(
     CATKIN_DEPENDS
       velodyne_msgs
       roscpp
-      sensor_msgs
+      pcl_types
   )
 
   add_library(VelodyneDecoder_ROS1

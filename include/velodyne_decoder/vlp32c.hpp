@@ -8,7 +8,6 @@
 #include <numbers>
 #include <ranges>
 #include <vector>
-#include <iostream>
 
 namespace velodyne_decoder::vlp32c {
 
@@ -26,9 +25,8 @@ public:
 
   template <typename T>
     requires(std::ranges::input_range<T>)
-  [[nodiscard]] std::vector<velodyne_decoder::PointXYZICT>
-  decode(const T &packets) {
-    std::vector<velodyne_decoder::PointXYZICT> cloud;
+  [[nodiscard]] std::vector<pcl_types::PointXYZICT> decode(const T &packets) {
+    std::vector<pcl_types::PointXYZICT> cloud;
     cloud.reserve(packets.size());
     std::ranges::for_each(packets, [&cloud, this](const auto &packet) {
       constexpr float kTWO_PI = std::numbers::pi_v<float> * 2.0f;
@@ -55,7 +53,7 @@ public:
         index += kFLAG_SIZE;
         const float blockAzimuth =
             static_cast<float>(getBytes<kAZIMUTH_SIZE>(&packet[index])) *
-            kCENTI_TO_UNIT * kDEG_TO_RAD +
+                kCENTI_TO_UNIT * kDEG_TO_RAD +
             std::numbers::pi_v<float> / 2.0f;
 
         float azimuthRate = 0.0;
@@ -81,7 +79,6 @@ public:
                 kBLOCK_TIME * static_cast<float>(block) +
                 kSEQUENCE_TIME * static_cast<float>(sequence) +
                 kCHANNEL_TIME * static_cast<float>(channel);
-            std::cout << timeOffset << "\n";
             float preciseAzimuth =
                 blockAzimuth +
                 azimuthRate * (kCHANNEL_TIME * static_cast<float>(channel) +

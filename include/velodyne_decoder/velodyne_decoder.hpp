@@ -1,6 +1,6 @@
 #pragma once
 
-#include "velodyne_decoder/point.hpp"
+#include "pcl_types/pcl_types.hpp"
 
 #include <bit>
 #include <cstdint>

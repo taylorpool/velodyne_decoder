@@ -10,6 +10,6 @@
 	<buildtool_depend>catkin</buildtool_depend>
 
 	<depend>velodyne_msgs</depend>
+	<depend>pcl_types</depend>
 	<depend>roscpp</depend>
-	<depend>sensor_msgs</depend>
 </package>

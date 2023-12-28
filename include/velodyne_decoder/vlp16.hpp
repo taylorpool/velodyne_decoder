@@ -25,9 +25,9 @@ private:
 public:
   [[nodiscard]] VelodyneDecoder() noexcept;
 
-  std::vector<PointXYZICT>
+  std::vector<pcl_types::PointXYZICT>
   decode(const std::ranges::input_range auto &packets) {
-    std::vector<PointXYZICT> cloud;
+    std::vector<pcl_types::PointXYZICT> cloud;
     std::ranges::for_each(packets, [this, &cloud](const auto &packet) {
       constexpr std::array<float, kNUM_CHANNELS> channelToVerticalCorrection{
           11.2f * kMILLI_TO_UNIT, -0.7f * kMILLI_TO_UNIT,
@@ -105,7 +105,6 @@ public:
     });
     return cloud;
   }
-  
 };
 
 } // namespace velodyne_decoder::vlp16
